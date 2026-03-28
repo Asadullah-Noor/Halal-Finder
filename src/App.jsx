@@ -1,80 +1,147 @@
-import React, { useState } from 'react'
+import React, { useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { MdNearMe } from "react-icons/md";
 import { CgProfile } from "react-icons/cg";
-import MapView from './components/MapView';
-import Sidebar from './components/Sidebar';
+import MapView from "./components/MapView";
+import Sidebar from "./components/Sidebar";
+import { useRestaurants } from "./hooks/useRestaurants";
 
-export const RESTAURANTS = [
-  { id: 1, name: "Qazan Restaurant", city: "Helsinki", latitude: 60.2119872, longitude: 25.0802481, address:"itakatu 1-7,00930 Helsinki"},
-  { id: 2, name: "Big Bite Konala", city: "Espo", latitude: 60.2052812, longitude: 24.7929246, address:"Vanha HameenKylantie 9,00390 Helsinki"},
-];
-const App = () => {
+export default function App() {
   const [active, setActive] = useState("Discover");
   const [selected, setSelected] = useState(null);
-  const [query, setQuery] = useState("");
+  const [search, setSearch] = useState("");
+  const [activeCuisine, setActiveCuisine] = useState("All");
+  const [userPos, setUserPos] = useState(null);
+  const [locating, setLocating] = useState(false);
 
-  const filtered = RESTAURANTS.filter((r) =>
-    r.name.toLowerCase().includes(query.toLowerCase()) ||
-    r.city.toLowerCase().includes(query.toLowerCase())
-  );
-  const navItems = ["Discover", "Favorites", "Recent"];
+  const { restaurants, loading, error } = useRestaurants();
+
+  // Get unique cuisines for filter buttons
+  const cuisines = ["All", ...new Set(restaurants.map((r) => r.cuisine).filter(Boolean))];
+
+  // Filter by search text and cuisine
+  const filtered = restaurants.filter((r) => {
+    const matchesSearch =
+      !search ||
+      r.name?.toLowerCase().includes(search.toLowerCase()) ||
+      r.city?.toLowerCase().includes(search.toLowerCase()) ||
+      r.cuisine?.toLowerCase().includes(search.toLowerCase());
+
+    const matchesCuisine = activeCuisine === "All" || r.cuisine === activeCuisine;
+
+    return matchesSearch && matchesCuisine;
+  });
+
+  // Near Me button
+  function handleNearMe() {
+    if (!navigator.geolocation) {
+      alert("Geolocation not supported by your browser.");
+      return;
+    }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        setUserPos([lat, lng]);
+
+        // Find the closest restaurant
+        let closest = null;
+        let minDist = Infinity;
+        filtered.forEach((r) => {
+          const dist = Math.hypot(r.latitude - lat, r.longitude - lng);
+          if (dist < minDist) {
+            minDist = dist;
+            closest = r;
+          }
+        });
+        if (closest) setSelected(closest);
+        setLocating(false);
+      },
+      () => {
+        alert("Could not get location. Please allow location access.");
+        setLocating(false);
+      }
+    );
+  }
+
   return (
     <div className="flex flex-col h-screen overflow-hidden">
+
       {/* Navbar */}
-      <header className="flex flex-wrap bg-teal-100 gap-4 p-4 items-center shrink-0">
-        <div>  <h1 className="text-2xl font-bold text-green-950 whitespace-nowrap">
-          Verdental Halal
-        </h1>
-        <p>Halal Finder Finland</p></div>
-        <nav className="flex text-teal-700 font-mono gap-6 cursor-pointer flex-wrap">
-          {navItems.map((item) => (
+      <header className="flex flex-wrap items-center gap-3 px-4 py-3 bg-[#e8f5ee] border-b border-green-200 shadow-sm shrink-0">
+        
+        {/* Brand */}
+        <div>
+          <h1 className="text-xl font-bold text-green-950"> Verdental Halal</h1>
+          <p className="text-xs text-green-700">Halal Finder · Finland</p>
+        </div>
+
+        {/* Nav links */}
+        <nav className="flex gap-5">
+          {["Discover", "Favorites", "Recent"].map((item) => (
             <button
               key={item}
               onClick={() => setActive(item)}
-              className={`transition-all ${
+              className={`text-sm font-medium transition-all ${
                 active === item
-                  ? "font-bold underline underline-offset-4"
-                  : "hover:text-teal-900"
+                  ? "font-bold text-green-900 underline underline-offset-4"
+                  : "text-teal-700 hover:text-teal-900"
               }`}
             >
               {item}
             </button>
           ))}
         </nav>
-        <div className="flex items-center bg-white border border-gray-200 rounded-2xl px-3 py-2 flex-1 min-w-[180px]">
+
+        {/* Search bar */}
+        <div className="flex items-center bg-white border border-gray-200 rounded-2xl px-3 py-2 flex-1 min-w-[180px] max-w-sm shadow-sm">
           <input
             type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search Halal Restaurant..."
-            className="outline-none bg-transparent w-full text-sm"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search restaurant or city…"
+            className="outline-none bg-transparent w-full text-sm text-gray-700 placeholder-gray-400"
           />
-          <FaSearch className="text-gray-400 ml-2 shrink-0" />
+          <FaSearch className="text-gray-400 ml-2 shrink-0" size={13} />
         </div>
-        <button className="bg-green-900 text-white rounded-2xl flex items-center gap-1 px-3 py-2 hover:bg-green-800 transition-colors">
-          <MdNearMe />
-          <span className="text-sm">Near me</span>
+
+        {/* Near Me */}
+        <button
+          onClick={handleNearMe}
+          disabled={locating}
+          className="flex items-center gap-1.5 bg-green-900 text-white text-sm px-3 py-2 rounded-2xl hover:bg-green-800 active:scale-95 transition-all disabled:opacity-60"
+        >
+          <MdNearMe size={16} />
+          {locating ? "Locating…" : "Near Me"}
         </button>
 
-        <CgProfile size={28} className="cursor-pointer text-green-900 hover:text-green-700 transition-colors" />
+        {/* Profile icon */}
+        <CgProfile size={28} className="cursor-pointer text-green-900 hover:text-green-700 ml-auto" />
       </header>
 
-      {/* Map + Sidebar split */}
+      {/* Main content */}
       <main className="flex flex-1 overflow-hidden">
-        <MapView
-          restaurants={filtered}
-          selected={selected}
-          onSelect={setSelected}
-        />
         <Sidebar
           restaurants={filtered}
           selected={selected}
           onSelect={setSelected}
+          cuisines={cuisines}
+          activeCuisine={activeCuisine}
+          onCuisineChange={setActiveCuisine}
+          loading={loading}
+          error={error}
         />
+        <div className="flex-1 h-full relative">
+          <MapView
+            restaurants={filtered}
+            selected={selected}
+            onSelect={setSelected}
+            userPos={userPos}
+          />
+        </div>
       </main>
+
     </div>
   );
-};
-
-export default App;
+}
