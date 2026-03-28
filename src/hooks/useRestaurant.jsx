@@ -2,9 +2,7 @@ import { useState, useEffect } from "react";
 import { sheetParser } from "../utils/sheetParser";
 
 // Published CSV URL from the Google Sheet
-const CSV_URL =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQZ5ewZpT_FcAuxKGMpe_MbX5oKwAvZyunvXDC6qvwAy_h5tlzVAVYAZK1Y7KvZ4S08XXZCLfp9Ssri/pub?output=csv";
-
+const CSV_URL = import.meta.env.VITE_CSV_URL;
 export function useRestaurants() {
   const [restaurants, setRestaurants] = useState([]);
   const [loading, setLoading] = useState(true);
