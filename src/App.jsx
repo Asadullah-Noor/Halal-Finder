@@ -4,8 +4,7 @@ import { MdNearMe } from "react-icons/md";
 import { CgProfile } from "react-icons/cg";
 import MapView from "./components/MapView";
 import Sidebar from "./components/Sidebar";
-import { useRestaurants } from "./hooks/useRestaurants";
-
+import { useRestaurants } from "./hooks/useRestaurant";
 export default function App() {
   const [active, setActive] = useState("Discover");
   const [selected, setSelected] = useState(null);
@@ -73,12 +72,12 @@ export default function App() {
         
         {/* Brand */}
         <div>
-          <h1 className="text-xl font-bold text-green-950"> Verdental Halal</h1>
+          <h1 className="text-xl font-bold text-green-900"> Verdental Halal</h1>
           <p className="text-xs text-green-700">Halal Finder · Finland</p>
         </div>
 
         {/* Nav links */}
-        <nav className="flex gap-5">
+        <nav className="flex gap-5 ms-30">
           {["Discover", "Favorites", "Recent"].map((item) => (
             <button
               key={item}
@@ -95,7 +94,7 @@ export default function App() {
         </nav>
 
         {/* Search bar */}
-        <div className="flex items-center bg-white border border-gray-200 rounded-2xl px-3 py-2 flex-1 min-w-[180px] max-w-sm shadow-sm">
+        <div className="flex items-center bg-white border border-gray-200 rounded-2xl px-3 py-2 ms-20 flex-1 min-w-[180px] max-w-sm shadow-sm text-end">
           <input
             type="text"
             value={search}
