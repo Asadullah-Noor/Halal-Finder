@@ -39,12 +39,6 @@ function RestaurantCard({ restaurant, selected, onSelect, userPos }) {
   ].filter(Boolean);
 
   return (
-    /*
-     * KEY: DO NOT use h-full or any flex-grow on the card itself.
-     * Each card is a block with natural height — the scroll container
-     * grows as cards are added, not the cards shrinking to fit.
-     * shrink-0 ensures the card NEVER compresses.
-     */
     <div
       onClick={() => onSelect(restaurant)}
       className={`
@@ -78,11 +72,10 @@ function RestaurantCard({ restaurant, selected, onSelect, userPos }) {
           <h3 className="font-bold text-gray-900 text-[15px] leading-snug">
             {restaurant.name}
           </h3>
-          {restaurant.rating && (
-            <span className="shrink-0 flex items-center gap-1 text-xs font-bold text-green-800 bg-green-50 border border-green-200 rounded-full px-2 py-0.5">
-              ★ {restaurant.rating}
+            <span className="shrink-0 flex items-center gap-1 text-xs font-bold text-green-950 bg-green-100 border border-green-200 rounded-full px-2 py-0.5">
+              ★ 4.8
             </span>
-          )}
+    
         </div>
 
         {/* Cuisine · Distance */}
@@ -95,18 +88,12 @@ function RestaurantCard({ restaurant, selected, onSelect, userPos }) {
         {/* Tag pills */}
         <div className="flex flex-wrap gap-1.5 pt-0.5">
           {restaurant.cuisine && (
-            <span className="text-[11px] font-semibold border border-gray-300 text-gray-600 rounded-full px-2.5 py-0.5 uppercase tracking-wide">
+            <span className="text-[11px] font-semibold bg-green-100 text-gray-700 rounded px-2.5 py-0.5 uppercase tracking-wide">
               {restaurant.cuisine}
             </span>
           )}
-          <span className="text-[11px] font-semibold border border-gray-300 text-gray-600 rounded-full px-2.5 py-0.5 uppercase tracking-wide">
-            {restaurant.halal_status === "Halal Certified" ? "Certified" : "Dining"}
-          </span>
-          {restaurant.hours && (
-            <span className="text-[11px] font-semibold border border-gray-300 text-gray-600 rounded-full px-2.5 py-0.5">
-              🕐 {restaurant.hours}
-            </span>
-          )}
+          
+        
         </div>
 
       </div>
@@ -158,7 +145,8 @@ function Sidebar({
   userPos,
 }) {
   return (
-    <div className="w-full md:w-[400px] shrink-0 h-full flex flex-col bg-gray-50 border-r border-gray-200 overflow-hidden">
+    <div className="w-full md:w-[400px] shrink-0 flex flex-col bg-gray-50 border-r border-gray-200
+      md:h-full md:overflow-hidden">
 
       {/* Header — fixed, never scrolls */}
       <div className="flex-shrink-0 bg-[#f0f7f4] px-4 pt-4 pb-3 border-b border-gray-200">
@@ -203,7 +191,7 @@ function Sidebar({
        * Cards inside use shrink-0 so they NEVER compress —
        * they just stack up and the container scrolls.
        */}
-      <div className="flex-1 min-h-0 overflow-y-auto p-4 flex flex-col gap-4">
+      <div className="md:flex-1 md:min-h-0 md:overflow-y-auto p-4 flex flex-col gap-4">
 
         {loading && (
           <>
