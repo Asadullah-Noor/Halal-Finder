@@ -5,7 +5,6 @@ import { CgProfile } from "react-icons/cg";
 import MapView from "./components/MapView";
 import Sidebar from "./components/Sidebar";
 import { useRestaurants } from "./hooks/UseRestaurant";
-
 export default function App() {
   const [active, setActive] = useState("Discover");
   const [selected, setSelected] = useState(null);
