@@ -4,7 +4,8 @@ import { MdNearMe } from "react-icons/md";
 import { CgProfile } from "react-icons/cg";
 import MapView from "./components/MapView";
 import Sidebar from "./components/Sidebar";
-import { useRestaurants } from "./hooks/useRestaurant";
+import { useRestaurants } from "./hooks/UseRestaurant";
+
 export default function App() {
   const [active, setActive] = useState("Discover");
   const [selected, setSelected] = useState(null);
@@ -15,10 +16,8 @@ export default function App() {
 
   const { restaurants, loading, error } = useRestaurants();
 
-  // Get unique cuisines for filter buttons
   const cuisines = ["All", ...new Set(restaurants.map((r) => r.cuisine).filter(Boolean))];
 
-  // Filter by search text and cuisine
   const filtered = restaurants.filter((r) => {
     const matchesSearch =
       !search ||
@@ -31,7 +30,6 @@ export default function App() {
     return matchesSearch && matchesCuisine;
   });
 
-  // Near Me button
   function handleNearMe() {
     if (!navigator.geolocation) {
       alert("Geolocation not supported by your browser.");
@@ -44,7 +42,6 @@ export default function App() {
         const lng = pos.coords.longitude;
         setUserPos([lat, lng]);
 
-        // Find the closest restaurant
         let closest = null;
         let minDist = Infinity;
         filtered.forEach((r) => {
@@ -65,18 +62,20 @@ export default function App() {
   }
 
   return (
+    /*
+     * h-screen + overflow-hidden on the root = the entire app is locked
+     * to the viewport. Nothing on the page can push it taller.
+     */
     <div className="flex flex-col h-screen overflow-hidden">
 
-      {/* Navbar */}
+      {/* ── Navbar: fixed height, never scrolls ── */}
       <header className="flex flex-wrap items-center gap-3 px-4 py-3 bg-[#e8f5ee] border-b border-green-200 shadow-sm shrink-0">
         
-        {/* Brand */}
         <div>
-          <h1 className="text-xl font-bold text-green-900"> Verdental Halal</h1>
+          <h1 className="text-xl font-bold text-green-900">Verdental Halal</h1>
           <p className="text-xs text-green-700">Halal Finder · Finland</p>
         </div>
 
-        {/* Nav links */}
         <nav className="flex gap-5 ms-30">
           {["Discover", "Favorites", "Recent"].map((item) => (
             <button
@@ -93,8 +92,7 @@ export default function App() {
           ))}
         </nav>
 
-        {/* Search bar */}
-        <div className="flex items-center bg-white border border-gray-200 rounded-2xl px-3 py-2 ms-20 flex-1 min-w-[180px] max-w-sm shadow-sm text-end">
+        <div className="flex items-center bg-white border border-gray-200 rounded-2xl px-3 py-2 ms-20 flex-1 min-w-[180px] max-w-sm shadow-sm">
           <input
             type="text"
             value={search}
@@ -105,7 +103,6 @@ export default function App() {
           <FaSearch className="text-gray-400 ml-2 shrink-0" size={13} />
         </div>
 
-        {/* Near Me */}
         <button
           onClick={handleNearMe}
           disabled={locating}
@@ -115,12 +112,20 @@ export default function App() {
           {locating ? "Locating…" : "Near Me"}
         </button>
 
-        {/* Profile icon */}
         <CgProfile size={28} className="cursor-pointer text-green-900 hover:text-green-700 ml-auto" />
       </header>
 
-      {/* Main content */}
+      {/*
+       * ── Main content ──
+       *
+       * overflow-hidden here is the KEY fix:
+       *   - It locks the row to exactly the remaining height after the navbar
+       *   - Sidebar's inner card list can then scroll independently
+       *   - Map panel is completely fixed — no scroll ever
+       */}
       <main className="flex flex-1 overflow-hidden">
+
+        {/* Sidebar scrolls internally — see Sidebar.jsx */}
         <Sidebar
           restaurants={filtered}
           selected={selected}
@@ -130,8 +135,16 @@ export default function App() {
           onCuisineChange={setActiveCuisine}
           loading={loading}
           error={error}
+          userPos={userPos}
         />
-        <div className="flex-1 h-full relative">
+
+        {/*
+         * Map panel:
+         *   flex-1        → takes all remaining width
+         *   overflow-hidden → map tiles can never cause a scrollbar
+         *   h-full        → fills the full height of <main>
+         */}
+        <div className="flex-1 h-full overflow-hidden relative">
           <MapView
             restaurants={filtered}
             selected={selected}
@@ -139,8 +152,8 @@ export default function App() {
             userPos={userPos}
           />
         </div>
-      </main>
 
+      </main>
     </div>
   );
 }
