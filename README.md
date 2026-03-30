@@ -1,18 +1,45 @@
-# React + Vite
+# Halal Finder Finland
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Halal Finder Finland is a React-based web application that allows users to explore halal restaurants across Finland using an interactive map. The application fetches real-time data from a Google Sheet (published as CSV) and provides search and filtering functionality.
 
-Currently, two official plugins are available:
+## Live Demo
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+https://halal-finder.up.railway.app/
 
-## React Compiler
+## GitHub Repository
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+https://github.com/Asadullah-Noor/Halal-Finder.git
 
-Note: This will impact Vite dev & build performances.
+## Features
 
-## Expanding the ESLint configuration
+* Interactive map displaying restaurant locations using React Leaflet
+* Search functionality by restaurant name or city
+* Filter restaurants by cuisine type
+* Detailed restaurant information including address, halal status, opening hours, and website
+* Data fetched dynamically from Google Sheets (CSV)
+* Responsive UI styled with Tailwind CSS
+* Use of React Icons for UI elements
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Tech Stack
+
+* React (Vite)
+* React Leaflet
+* Tailwind CSS
+* React Icons
+* Google Sheets (CSV as data source)
+
+## Installation and Setup
+
+```bash
+git clone https://github.com/Asadullah-Noor/Halal-Finder.git
+cd Halal-Finder
+npm install
+npm run dev
+```
+
+The application will be available at: http://localhost:5173
+
+## Notes
+
+* This is a frontend-only application with no backend or database
+* Data is fetched and parsed from a public Google Sheet
