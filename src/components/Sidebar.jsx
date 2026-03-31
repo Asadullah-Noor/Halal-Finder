@@ -9,6 +9,7 @@ function getImage(restaurant) {
   if (cuisine.includes("bangladeshi")) return "/images/biryani.png";
   if (cuisine.includes("indian"))      return "/images/indian.png";
   if (cuisine.includes("pakistani"))   return "/images/single.png";
+  if (cuisine.includes("pakistani"))   return "/images/krae.png"
   return "/images/single.png";
 }
 
